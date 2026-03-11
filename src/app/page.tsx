@@ -10,6 +10,13 @@ export default function HomePage() {
   const [joinPassword, setJoinPassword] = useState("");
   const [hostPassword, setHostPassword] = useState("");
   const [isCreating, setIsCreating] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
+
+  const handleCopyWallet = () => {
+    navigator.clipboard.writeText("0xfa5103beb35575abaa8a06af51743f18b7b27c6b");
+    setIsCopied(true);
+    setTimeout(() => setIsCopied(false), 2000);
+  };
 
   const handleCreateRoom = () => {
     if (!hostPassword.trim()) return;
@@ -155,6 +162,27 @@ export default function HomePage() {
             View on GitHub
           </a>
         </p>
+        <div style={{ marginTop: "1.5rem" }}>
+          <p style={{ marginBottom: "0.5rem" }}>Support the project (Donations accepted):</p>
+          <div 
+            onClick={handleCopyWallet}
+            style={{ 
+              display: "inline-block",
+              background: "rgba(255, 255, 255, 0.1)", 
+              padding: "0.4rem 0.8rem", 
+              borderRadius: "0.25rem", 
+              cursor: "pointer",
+              fontFamily: "monospace",
+              position: "relative",
+              transition: "background 0.2s"
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.2)")}
+            onMouseOut={(e) => (e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)")}
+            title="Click to copy"
+          >
+            {isCopied ? "Copied!" : "0xfa5103beb35575abaa8a06af51743f18b7b27c6b"}
+          </div>
+        </div>
       </footer>
     </div>
   );
