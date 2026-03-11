@@ -2,6 +2,9 @@
   "name": "ztest_wos-trick",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "tsx server.ts",
     "build": "next build",
