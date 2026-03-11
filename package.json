@@ -2,9 +2,6 @@
   "name": "ztest_wos-trick",
   "version": "0.1.0",
   "private": true,
-  "engines": {
-    "node": ">=22.12.0"
-  },
   "scripts": {
     "dev": "tsx server.ts",
     "build": "next build",
@@ -12,13 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@prisma/adapter-pg": "^7.4.2",
-    "@prisma/client": "^7.4.2",
+    "@prisma/adapter-pg": "^6.19.2",
+    "@prisma/client": "^6.19.2",
     "@types/pg": "^8.18.0",
     "dotenv": "^17.3.1",
     "next": "16.1.6",
     "pg": "^8.20.0",
-    "prisma": "^7.4.2",
+    "prisma": "^6.19.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "socket.io": "^4.8.3",
