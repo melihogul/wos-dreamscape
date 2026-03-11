@@ -33,25 +33,25 @@ export default function HomePage() {
       <div className="hero-section">
         <h1 className="hero-title">DotCast</h1>
         <p className="hero-subtitle">
-          Ekranını paylaş, izleyicilerin renkli noktalarla ekranına işaret atsın.
-          Gerçek zamanlı, eğlenceli, interaktif.
+          Share your screen, and let viewers place colorful dots on it.
+          Real-time, fun, and interactive.
         </p>
       </div>
 
       <div className="cards-container">
-        {/* Oda Oluştur */}
+        {/* Create Room */}
         <div className="action-card">
           <div className="card-icon">📡</div>
-          <h2 className="card-title">Yayın Başlat</h2>
+          <h2 className="card-title">Start Broadcast</h2>
           <p className="card-description">
-            Yeni bir oda oluştur ve ekranını paylaşmaya başla. Oda ID&apos;sini
-            izleyicilerle paylaş.
+            Create a new room and start sharing your screen. Share the Room ID
+            with your viewers.
           </p>
           <div className="input-group">
             <input
               type="password"
               className="text-input"
-              placeholder="Oda şifresi belirle..."
+              placeholder="Set a room password..."
               value={hostPassword}
               onChange={(e) => setHostPassword(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreateRoom()}
@@ -61,24 +61,26 @@ export default function HomePage() {
               onClick={handleCreateRoom}
               disabled={isCreating || !hostPassword.trim()}
             >
-              {isCreating ? "Oluşturuluyor..." : "🚀 Oda Oluştur"}
+              {isCreating ? "Creating..." : "🚀 Create Room"}
             </button>
+            <p className="ip-warning" style={{ fontSize: "0.75rem", color: "var(--text-muted)", textAlign: "center", marginTop: "0.5rem", marginBottom: 0 }}>
+              By creating a room, you acknowledge that your IP address will be recorded for security purposes.
+            </p>
           </div>
         </div>
 
-        {/* Odaya Katıl */}
+        {/* Join Room */}
         <div className="action-card">
           <div className="card-icon">👀</div>
-          <h2 className="card-title">Yayın İzle</h2>
+          <h2 className="card-title">Watch Broadcast</h2>
           <p className="card-description">
-            Bir oda ID&apos;si ve şifresi girerek yayına katıl. Ekrana renkli
-            noktalar koyarak işaret at.
+            Join a room using the Room ID and Password. Place colorful dots on the screen.
           </p>
           <div className="input-group">
             <input
               type="text"
               className="text-input"
-              placeholder="Oda ID'sini gir..."
+              placeholder="Enter Room ID..."
               value={joinRoomId}
               onChange={(e) => setJoinRoomId(e.target.value.toUpperCase())}
               maxLength={8}
@@ -86,7 +88,7 @@ export default function HomePage() {
             <input
               type="password"
               className="text-input"
-              placeholder="Oda şifresi..."
+              placeholder="Room password..."
               value={joinPassword}
               onChange={(e) => setJoinPassword(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleJoinRoom()}
@@ -96,7 +98,7 @@ export default function HomePage() {
               onClick={handleJoinRoom}
               disabled={!joinRoomId.trim() || !joinPassword.trim()}
             >
-              👁️ Yayına Katıl
+              👁️ Join Room
             </button>
           </div>
         </div>

@@ -224,7 +224,7 @@ export default function RoomPage() {
           { roomId, password },
           (result: { success: boolean; error?: string }) => {
             if (!result.success) {
-              setError(result.error || "Oda oluşturulamadı.");
+              setError(result.error || "Could not create room.");
             } else {
               console.log("[Host] Room created:", roomId);
             }
@@ -241,7 +241,7 @@ export default function RoomPage() {
             error?: string;
           }) => {
             if (!result.success) {
-              setError(result.error || "Odaya katılınamadı.");
+              setError(result.error || "Could not join room.");
               return;
             }
             console.log("[Viewer] Joined room:", roomId);
@@ -266,7 +266,7 @@ export default function RoomPage() {
     });
 
     socket.on("room-closed", () => {
-      setError("Yayıncı odadan ayrıldı. Oda kapatıldı.");
+      setError("Host left the room. Room closed.");
       setIsBroadcasting(false);
     });
 
@@ -504,21 +504,21 @@ export default function RoomPage() {
         <div className="room-header">
           <div className="room-header-left">
             <Link href="/" className="back-link">
-              ← Ana Sayfa
+              ← Home
             </Link>
           </div>
         </div>
         <div className="screen-area">
           <div className="waiting-state">
             <div className="waiting-icon">⚠️</div>
-            <h2 className="waiting-title">Hata</h2>
+            <h2 className="waiting-title">Error</h2>
             <p className="waiting-subtitle">{error}</p>
             <Link
               href="/"
               className="btn btn-primary"
               style={{ marginTop: "1rem" }}
             >
-              Ana Sayfaya Dön
+              Return to Home
             </Link>
           </div>
         </div>
@@ -532,12 +532,12 @@ export default function RoomPage() {
       <div className="room-header">
         <div className="room-header-left">
           <Link href="/" className="back-link">
-            ← Ana Sayfa
+            ← Home
           </Link>
           <div
             className="room-id-badge"
             onClick={copyRoomId}
-            title="Kopyalamak için tıkla"
+            title="Click to copy"
           >
             🔑 {roomId}
           </div>
@@ -548,12 +548,12 @@ export default function RoomPage() {
                 background: isConnected ? "var(--success)" : "var(--danger)",
               }}
             />
-            {isConnected ? (isHost ? "Yayıncı" : "İzleyici") : "Bağlanıyor..."}
+            {isConnected ? (isHost ? "Host" : "Viewer") : "Connecting..."}
           </div>
         </div>
         <div className="room-header-right">
           {isHost && (
-            <div className="viewer-count">👥 {viewerCount} izleyici</div>
+            <div className="viewer-count">👥 {viewerCount} viewer(s)</div>
           )}
           {isHost && isBroadcasting && (
             <>
@@ -562,7 +562,7 @@ export default function RoomPage() {
                 onClick={clearDots}
                 style={{ fontSize: "0.8rem", padding: "0.35rem 0.75rem" }}
               >
-                🗑️ Noktaları Temizle
+                🗑️ Clear Dots
               </button>
             </>
           )}
@@ -575,10 +575,9 @@ export default function RoomPage() {
         {isHost && showWaiting && (
           <div className="broadcast-start">
             <div className="broadcast-start-icon">📡</div>
-            <h2 className="waiting-title">Yayın Başlat</h2>
+            <h2 className="waiting-title">Start Broadcast</h2>
             <p className="waiting-subtitle">
-              Ekranını paylaşmaya başla. İzleyiciler oda ID&apos;si ile
-              katılabilir:
+              Start sharing your screen. Viewers can join with the Room ID:
             </p>
             <div
               style={{
@@ -598,10 +597,10 @@ export default function RoomPage() {
             </div>
             <div className="share-btn-group">
               <button className="btn btn-primary" onClick={startBroadcast}>
-                🖥️ Ekranı Paylaş
+                🖥️ Share Screen
               </button>
               <button className="btn btn-secondary" onClick={copyRoomId}>
-                📋 ID Kopyala
+                📋 Copy ID
               </button>
             </div>
           </div>
@@ -611,10 +610,10 @@ export default function RoomPage() {
         {!isHost && showWaiting && (
           <div className="waiting-state">
             <div className="waiting-icon">⏳</div>
-            <h2 className="waiting-title">Yayın Bekleniyor</h2>
+            <h2 className="waiting-title">Waiting for Broadcast</h2>
             <p className="waiting-subtitle">
-              Yayıncının ekranını paylaşmasını bekliyoruz. Bağlantınız
-              kurulduğunda yayın otomatik başlayacak.
+              Waiting for the host to share their screen. The broadcast will
+              automatically start once connected.
             </p>
           </div>
         )}
@@ -698,7 +697,7 @@ export default function RoomPage() {
         </div>
       )}
 
-      {copied && <div className="copied-feedback">✅ Oda ID kopyalandı!</div>}
+      {copied && <div className="copied-feedback">✅ Room ID copied!</div>}
     </div>
   );
 }

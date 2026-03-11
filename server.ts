@@ -86,12 +86,12 @@ app.prepare().then(() => {
         const { roomId, password } = data;
 
         if (rooms.has(roomId)) {
-          callback({ success: false, error: "Bu oda ID zaten kullanılıyor." });
+          callback({ success: false, error: "This Room ID is already in use." });
           return;
         }
 
         if (!password || password.length < 1) {
-          callback({ success: false, error: "Oda şifresi gereklidir." });
+          callback({ success: false, error: "Room password is required." });
           return;
         }
 
@@ -147,13 +147,13 @@ app.prepare().then(() => {
         const room = rooms.get(roomId);
 
         if (!room) {
-          callback({ success: false, error: "Oda bulunamadı." });
+          callback({ success: false, error: "Room not found." });
           return;
         }
 
         // Şifre kontrolü
         if (room.password !== password) {
-          callback({ success: false, error: "Oda şifresi yanlış." });
+          callback({ success: false, error: "Incorrect room password." });
           return;
         }
 
