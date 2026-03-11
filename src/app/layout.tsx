@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DotCast - Live Screen Sharing with Interactive Dots",
+  title: "WoS Dreamscape - Live Screen Sharing with Interactive Dots",
   description:
     "Share your screen, create a room, and let viewers place colorful dots on your screen in real-time.",
 };
