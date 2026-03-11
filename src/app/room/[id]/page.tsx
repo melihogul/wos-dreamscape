@@ -142,13 +142,19 @@ export default function RoomPage() {
       };
 
       pc.onconnectionstatechange = () => {
-        console.log(`[WebRTC] Connection state with ${remoteSocketId}: ${pc.connectionState}`);
+        console.log(
+          `[WebRTC] Connection state with ${remoteSocketId}: ${pc.connectionState}`,
+        );
       };
 
       // Viewer receives track
       if (!isHost) {
         pc.ontrack = (event) => {
-          console.log("[WebRTC] Received track from host!", event.streams.length, "streams");
+          console.log(
+            "[WebRTC] Received track from host!",
+            event.streams.length,
+            "streams",
+          );
           if (videoRef.current && event.streams[0]) {
             videoRef.current.srcObject = event.streams[0];
             videoRef.current.play().catch(console.error);
@@ -160,7 +166,7 @@ export default function RoomPage() {
       peerConnectionsRef.current.set(remoteSocketId, pc);
       return pc;
     },
-    [isHost]
+    [isHost],
   );
 
   // ========== Stream'i bir izleyiciye gönder ==========
@@ -188,7 +194,7 @@ export default function RoomPage() {
         console.error("[Host] Error sending stream to viewer:", err);
       }
     },
-    [createPeerConnection]
+    [createPeerConnection],
   );
 
   // ========== SOCKET CONNECTION ==========
@@ -210,28 +216,39 @@ export default function RoomPage() {
       console.log("Socket connected:", socket.id);
       setIsConnected(true);
 
+      const password = searchParams.get("pwd") || "";
+
       if (isHost) {
-        socket.emit("create-room", roomId, (success: boolean) => {
-          if (!success) {
-            setError("Bu oda ID zaten kullanılıyor. Lütfen yeni bir oda oluşturun.");
-          } else {
-            console.log("[Host] Room created:", roomId);
-          }
-        });
+        socket.emit(
+          "create-room",
+          { roomId, password },
+          (result: { success: boolean; error?: string }) => {
+            if (!result.success) {
+              setError(result.error || "Oda oluşturulamadı.");
+            } else {
+              console.log("[Host] Room created:", roomId);
+            }
+          },
+        );
       } else {
         socket.emit(
           "join-room",
-          roomId,
-          (data: { success: boolean; dots?: Dot[]; hostSocketId?: string }) => {
-            if (!data.success) {
-              setError("Oda bulunamadı. Lütfen oda ID'sini kontrol edin.");
+          { roomId, password },
+          (result: {
+            success: boolean;
+            dots?: Dot[];
+            hostSocketId?: string;
+            error?: string;
+          }) => {
+            if (!result.success) {
+              setError(result.error || "Odaya katılınamadı.");
               return;
             }
             console.log("[Viewer] Joined room:", roomId);
-            if (data.dots) {
-              setDots(data.dots);
+            if (result.dots) {
+              setDots(result.dots);
             }
-          }
+          },
         );
       }
     });
@@ -257,11 +274,16 @@ export default function RoomPage() {
     if (!isHost) {
       socket.on(
         "webrtc-offer",
-        async (data: { offer: RTCSessionDescriptionInit; fromSocketId: string }) => {
+        async (data: {
+          offer: RTCSessionDescriptionInit;
+          fromSocketId: string;
+        }) => {
           try {
             console.log("[Viewer] Received WebRTC offer from host");
             const pc = createPeerConnection(data.fromSocketId, socket);
-            await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+            await pc.setRemoteDescription(
+              new RTCSessionDescription(data.offer),
+            );
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
 
@@ -273,7 +295,7 @@ export default function RoomPage() {
           } catch (err) {
             console.error("[Viewer] Error handling offer:", err);
           }
-        }
+        },
       );
     }
 
@@ -289,7 +311,9 @@ export default function RoomPage() {
           console.log("[Host] Stream exists, sending to new viewer");
           sendStreamToViewer(data.viewerSocketId, streamRef.current, socket);
         } else {
-          console.log("[Host] No stream yet, viewer will receive when broadcast starts");
+          console.log(
+            "[Host] No stream yet, viewer will receive when broadcast starts",
+          );
         }
       });
 
@@ -310,21 +334,26 @@ export default function RoomPage() {
       (data: { candidate: RTCIceCandidateInit; fromSocketId: string }) => {
         const pc = peerConnectionsRef.current.get(data.fromSocketId);
         if (pc) {
-          pc.addIceCandidate(new RTCIceCandidate(data.candidate)).catch(console.error);
+          pc.addIceCandidate(new RTCIceCandidate(data.candidate)).catch(
+            console.error,
+          );
         }
-      }
+      },
     );
 
     // Answer handling
     socket.on(
       "webrtc-answer",
-      async (data: { answer: RTCSessionDescriptionInit; fromSocketId: string }) => {
+      async (data: {
+        answer: RTCSessionDescriptionInit;
+        fromSocketId: string;
+      }) => {
         const pc = peerConnectionsRef.current.get(data.fromSocketId);
         if (pc) {
           await pc.setRemoteDescription(new RTCSessionDescription(data.answer));
           console.log("[Host] WebRTC answer received, connection established");
         }
-      }
+      },
     );
 
     return () => {
@@ -366,7 +395,10 @@ export default function RoomPage() {
         audio: false,
       });
 
-      console.log("[Host] Got display media stream, tracks:", stream.getTracks().length);
+      console.log(
+        "[Host] Got display media stream, tracks:",
+        stream.getTracks().length,
+      );
       streamRef.current = stream;
 
       // State'i güncelle - bu re-render tetikler ve video elementi görünür olur
@@ -376,7 +408,10 @@ export default function RoomPage() {
       // Zaten bağlı olan izleyicilere stream gönder
       const socket = socketRef.current;
       if (socket) {
-        console.log("[Host] Broadcasting to existing viewers:", connectedViewersRef.current.size);
+        console.log(
+          "[Host] Broadcasting to existing viewers:",
+          connectedViewersRef.current.size,
+        );
         for (const viewerSocketId of connectedViewersRef.current) {
           sendStreamToViewer(viewerSocketId, stream, socket);
         }
@@ -406,8 +441,10 @@ export default function RoomPage() {
     const clickY = e.clientY - wrapperRect.top;
 
     // Video içerik alanına göre yüzde hesapla
-    const x = ((clickX - videoContentRect.offsetX) / videoContentRect.width) * 100;
-    const y = ((clickY - videoContentRect.offsetY) / videoContentRect.height) * 100;
+    const x =
+      ((clickX - videoContentRect.offsetX) / videoContentRect.width) * 100;
+    const y =
+      ((clickY - videoContentRect.offsetY) / videoContentRect.height) * 100;
 
     // Video dışına tıklanmışsa yoksay (letterbox alanı)
     if (x < 0 || x > 100 || y < 0 || y > 100) return;
@@ -449,16 +486,6 @@ export default function RoomPage() {
     }
   };
 
-  // ========== POP-OUT WINDOW ==========
-  const openPopout = () => {
-    const w = window.open(
-      `/room/${roomId}/popout`,
-      "dotcast-popout",
-      "width=1280,height=720,resizable=yes"
-    );
-    popoutWindowRef.current = w;
-  };
-
   // Send dots to pop-out
   useEffect(() => {
     if (popoutWindowRef.current && !popoutWindowRef.current.closed) {
@@ -486,7 +513,11 @@ export default function RoomPage() {
             <div className="waiting-icon">⚠️</div>
             <h2 className="waiting-title">Hata</h2>
             <p className="waiting-subtitle">{error}</p>
-            <Link href="/" className="btn btn-primary" style={{ marginTop: "1rem" }}>
+            <Link
+              href="/"
+              className="btn btn-primary"
+              style={{ marginTop: "1rem" }}
+            >
               Ana Sayfaya Dön
             </Link>
           </div>
@@ -503,7 +534,11 @@ export default function RoomPage() {
           <Link href="/" className="back-link">
             ← Ana Sayfa
           </Link>
-          <div className="room-id-badge" onClick={copyRoomId} title="Kopyalamak için tıkla">
+          <div
+            className="room-id-badge"
+            onClick={copyRoomId}
+            title="Kopyalamak için tıkla"
+          >
             🔑 {roomId}
           </div>
           <div className="room-status">
@@ -517,16 +552,11 @@ export default function RoomPage() {
           </div>
         </div>
         <div className="room-header-right">
-          {isHost && <div className="viewer-count">👥 {viewerCount} izleyici</div>}
+          {isHost && (
+            <div className="viewer-count">👥 {viewerCount} izleyici</div>
+          )}
           {isHost && isBroadcasting && (
             <>
-              <button
-                className="btn btn-secondary"
-                onClick={openPopout}
-                style={{ fontSize: "0.8rem", padding: "0.35rem 0.75rem" }}
-              >
-                ↗️ Yeni Pencerede Aç
-              </button>
               <button
                 className="btn btn-secondary"
                 onClick={clearDots}
@@ -547,7 +577,8 @@ export default function RoomPage() {
             <div className="broadcast-start-icon">📡</div>
             <h2 className="waiting-title">Yayın Başlat</h2>
             <p className="waiting-subtitle">
-              Ekranını paylaşmaya başla. İzleyiciler oda ID&apos;si ile katılabilir:
+              Ekranını paylaşmaya başla. İzleyiciler oda ID&apos;si ile
+              katılabilir:
             </p>
             <div
               style={{
@@ -582,8 +613,8 @@ export default function RoomPage() {
             <div className="waiting-icon">⏳</div>
             <h2 className="waiting-title">Yayın Bekleniyor</h2>
             <p className="waiting-subtitle">
-              Yayıncının ekranını paylaşmasını bekliyoruz. Bağlantınız kurulduğunda
-              yayın otomatik başlayacak.
+              Yayıncının ekranını paylaşmasını bekliyoruz. Bağlantınız
+              kurulduğunda yayın otomatik başlayacak.
             </p>
           </div>
         )}
@@ -631,6 +662,17 @@ export default function RoomPage() {
           )}
         </div>
       </div>
+      <footer
+        style={{
+          textAlign: "center",
+          padding: "1rem",
+          color: "var(--text-muted)",
+          fontSize: "0.8rem",
+          marginTop: "auto",
+        }}
+      >
+        WOS Trick &copy; {new Date().getFullYear()}
+      </footer>
 
       {/* Viewer Color Picker Toolbar */}
       {!isHost && hasStream && (
@@ -645,15 +687,14 @@ export default function RoomPage() {
             />
           ))}
           <div className="toolbar-divider" />
-          <span
-            style={{
-              fontSize: "0.75rem",
-              color: "var(--text-muted)",
-              whiteSpace: "nowrap",
-            }}
+          <div className="toolbar-divider" />
+          <button
+            className="btn btn-danger"
+            onClick={clearDots}
+            style={{ fontSize: "0.75rem", padding: "0.3rem 0.6rem" }}
           >
-            Ekrana tıklayarak nokta koy
-          </span>
+            🗑️ Remove
+          </button>
         </div>
       )}
 

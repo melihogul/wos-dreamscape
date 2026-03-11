@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Room {
+  id        String   @id @default(cuid())
+  roomCode  String   @unique // 8 karakterlik oda kodu (ör: "3D2BED11")
+  password  String   // oda şifresi
+  hostIp    String   // yayıncının IP adresi
+  hostAgent String?  // yayıncının user agent bilgisi
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  closedAt  DateTime?
+
+  @@index([roomCode])
+  @@index([isActive])
+}
