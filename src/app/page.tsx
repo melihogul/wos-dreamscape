@@ -31,11 +31,8 @@ export default function HomePage() {
   return (
     <div className="home-container">
       <div className="hero-section">
-        <h1 className="hero-title">DotCast</h1>
-        <p className="hero-subtitle">
-          Share your screen, and let viewers place colorful dots on it.
-          Real-time, fun, and interactive.
-        </p>
+        <h1 className="hero-title">Whiteout Survival</h1>
+        <p className="hero-subtitle">Dreamscape Memory Event Tool</p>
       </div>
 
       <div className="cards-container">

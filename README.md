@@ -1,6 +1,6 @@
 # Whiteout Survival Dreamscape Memory Event Tool 🔴📡
 
-This tool is a fun and interactive broadcasting platform where users can share their screens, and viewers can interact by placing real-time colorful dots on the shared screen.
+After sharing your screen, your friend can interact by placing real-time colored dots on the shared screen. You can make faster progress in this event.
 
 ## 🌟 Features
 
